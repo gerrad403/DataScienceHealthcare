@@ -27,75 +27,75 @@ LIST_OF_SEQUENCES = generate_random_dna_sequences(GLOBAL_SEED, READ_COUNTS)
 
 # 4. 염기서열 리스트 데이터프레임 생성
 df_original = pd.DataFrame({  #수정
-    'sequence_id': [f"Sequence_{i+1}" for i in range(len(LIST_OF_SEQUENCES))],  #수정
-    'sequence': LIST_OF_SEQUENCES,  #수정
-    'length': [len(seq) for seq in LIST_OF_SEQUENCES]  #수정
+    'sequence_id': [f"Sequence_{i+1}" for i in range(len(LIST_OF_SEQUENCES))],  
+    'sequence': LIST_OF_SEQUENCES,  
+    'length': [len(seq) for seq in LIST_OF_SEQUENCES] 
 })
 
 # 5. 염기서열 리스트 txt 파일 생성
-def save_txt(df, filename="sequences.txt"):  #수정
-    with open(filename, 'w') as file:  #수정
-            for i,row in df.iterrows():  #수정
-                file.write(f">{row['sequence_id']}\n")  #수정
-                file.write(f"{row['sequence']}\n")  #수정
+def save_txt(df, filename="sequences.txt"): 
+    with open(filename, 'w') as file:  
+            for i,row in df.iterrows():  
+                file.write(f">{row['sequence_id']}\n") 
+                file.write(f"{row['sequence']}\n") 
 save_txt(df_original)
 
 # 6. txt 파일 읽어오기
-def read_txt(filename="sequences.txt"):  #수정
-    if not os.path.exists(filename):  #수정
-        print(f"파일 없음: {filename}")  #수정
-        return None  #수정
+def read_txt(filename="sequences.txt"): 
+    if not os.path.exists(filename): 
+        print(f"파일 없음: {filename}") 
+        return None 
     
-    try:  #수정
-        sequences = []  #수정
-        headers = []  #수정
+    try: 
+        sequences = []  
+        headers = []  
         
-        with open(filename, 'r') as file:  #수정
-            current_header = None  #수정
-            current_sequence = ""  #수정
+        with open(filename, 'r') as file: 
+            current_header = None 
+            current_sequence = "" 
             
-            for line in file:  #수정
-                line = line.strip()  #수정
-                if line.startswith('>'):  #수정
-                    if current_header is not None:  #수정
-                        headers.append(current_header)  #수정
-                        sequences.append(current_sequence)  #수정
-                    current_header = line[1:]  #수정
-                    current_sequence = ""  #수정
-                else:  #수정
-                    current_sequence += line  #수정
+            for line in file: 
+                line = line.strip()  
+                if line.startswith('>'):
+                    if current_header is not None:  
+                        headers.append(current_header) 
+                        sequences.append(current_sequence) 
+                    current_header = line[1:]
+                    current_sequence = ""  
+                else: 
+                    current_sequence += line
             
-            if current_header is not None:  #수정
-                headers.append(current_header)  #수정
-                sequences.append(current_sequence)  #수정
+            if current_header is not None: 
+                headers.append(current_header)
+                sequences.append(current_sequence) 
         
-        df_txt = pd.DataFrame({'sequence_id': headers, 'sequence': sequences})  #수정
-        print(f"FASTA 파일 읽기 성공: {len(df_txt)}개 서열")  #수정
-        return df_txt  #수정
+        df_txt = pd.DataFrame({'sequence_id': headers, 'sequence': sequences}) 
+        print(f"FASTA 파일 읽기 성공: {len(df_txt)}개 서열")
+        return df_txt 
         
-    except Exception as e:  #수정
-        print(f"FASTA 읽기 실패: {e}")  #수정
-        return None  #수정
+    except Exception as e: 
+        print(f"FASTA 읽기 실패: {e}") 
+        return None 
 
 df_load=read_txt()
 
 # 7. GC content percentage 계산 함수
-def gc_function(sequence):                                  #수정
+def gc_function(sequence):
     gc_content = 100.0 * ( sequence.count('G') + sequence.count('C') ) / len(sequence)
     return gc_content
 
 # 8. txt 파일에서 gc ratio 계산 결과 출력
 df_read = df_load.copy()
-df_read['gc_ratio'] = df_read['sequence'].apply(gc_function)  #수정
-df_read['length'] = df_read['sequence'].str.len()  #수정
-df_read['sequence_number'] = df_read['sequence_id'].str.extract(r'Sequence_(\d+)').astype(int)  #수정
+df_read['gc_ratio'] = df_read['sequence'].apply(gc_function) 
+df_read['length'] = df_read['sequence'].str.len()
+df_read['sequence_number'] = df_read['sequence_id'].str.extract(r'Sequence_(\d+)').astype(int)
 
-for i, row in df_read.iterrows():  #수정
-  print(f"{row['sequence_id']}: Length = {row['length']}, GC Content = {row['gc_ratio']:.2f}%")  #수정
+for i, row in df_read.iterrows():
+  print(f"{row['sequence_id']}: Length = {row['length']}, GC Content = {row['gc_ratio']:.2f}%")
 
 # 9. 시각화 
-plt.figure(figsize=(8, 6))                                        #수정
-plt.bar(df_read["sequence_number"], df_read["gc_ratio"])               #수정: 색상 지정 생략
+plt.figure(figsize=(8, 6))
+plt.bar(df_read["sequence_number"], df_read["gc_ratio"])
 plt.title('GC Content of DNA Sequences')
 plt.xlabel('Sequence Number')
 plt.ylabel('GC Content (%)')
