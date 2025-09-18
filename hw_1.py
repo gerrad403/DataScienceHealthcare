@@ -70,11 +70,11 @@ def read_txt(filename="sequences.txt"):
                 sequences.append(current_sequence) 
         
         df_txt = pd.DataFrame({'sequence_id': headers, 'sequence': sequences}) 
-        print(f"FASTA 파일 읽기 성공: {len(df_txt)}개 서열")
+        print(f"txt 파일 읽기 성공: {len(df_txt)}개 서열")
         return df_txt 
         
     except Exception as e: 
-        print(f"FASTA 읽기 실패: {e}") 
+        print(f"txt 읽기 실패: {e}") 
         return None 
 
 df_load=read_txt()
